@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Recommender - Recommend</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-200">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-gray-800/80 backdrop-blur-sm sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-xl font-bold text-green-400">TuneFinder</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="/" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/recommend" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Recommend</a>
+                        <a href="/about" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
+                        <a href="/contact" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 w-full">
+        <h1 class="text-3xl font-bold text-center text-white mb-4">Get Your Recommendations</h1>
+        <p class="text-center text-lg text-gray-400 mb-8 max-w-2xl mx-auto">Enter the name of a song you love, and our content-based model will find 5 songs with similar musical features.</p>
+
+        <!-- Search Form -->
+        <form action="/recommend" method="post" class="mb-12 max-w-2xl mx-auto">
+            <div class="flex rounded-lg shadow-md">
+                <input type="text" id="song_name" name="song_name" list="song-list" required class="flex-grow bg-gray-800 border-2 border-gray-700 text-white rounded-l-md p-4 focus:ring-green-500 focus:border-green-500 focus:outline-none" placeholder="e.g., Blinding Lights">
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-r-md transition-colors">Find</button>
+            </div>
+            <datalist id="song-list">
+                {% for song in song_names %}
+                    <option value="{{ song }}">
+                {% endfor %}
+            </datalist>
+        </form>
+
+        <!-- Results Section -->
+        <div class="max-w-5xl mx-auto">
+            {% if error_message %}
+                <div class="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg text-center" role="alert">
+                    <p>{{ error_message }}</p>
+                </div>
+            {% endif %}
+
+            {% if recommendations %}
+                <h2 class="text-2xl font-bold text-white mb-6">Recommendations for <span class="text-green-400">{{ user_song }}</span>:</h2>
+                <div class="card-grid">
+                    {% for song in recommendations %}
+                    <div class="bg-gray-800 rounded-lg overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 shadow-md">
+                        <img src="{{ song.image_url }}" alt="Album art for {{ song.name }}" class="w-full h-auto aspect-square object-cover">
+                        <div class="p-4">
+                            <h3 class="font-bold text-md text-white truncate group-hover:text-green-400 transition-colors">{{ song.name }}</h3>
+                            <p class="text-sm text-gray-400 truncate mb-4">{{ song.artists }}</p>
+                             <a href="https://open.spotify.com/track/{{ song.id }}" target="_blank" rel="noopener noreferrer" class="inline-block w-full text-center bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md text-sm transition-colors">
+                                Listen on Spotify
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 mt-12">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-gray-400 text-sm">
+            <p>&copy; 2024 TuneFinder. Project by Rahul.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
+
