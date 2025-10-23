@@ -124,7 +124,7 @@ def recommend():
 
                 # 4. Get the indices of the top 5 most similar songs (excluding itself).
                 # We use argsort to get indices, reverse it, and take indices 1 to 6.
-                similar_indices = np.argsort(all_similarities)[::-1][1:11]
+                similar_indices = np.argsort(all_similarities)[::-1][1:5]
 
                 # 5. Get the details for the recommended songs using these indices.
                 recommended_data = songs_df.iloc[similar_indices]
