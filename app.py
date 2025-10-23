@@ -22,7 +22,7 @@ try:
     scaled_features=np.load('scaled_features.npy')
     print("Song data annd scaled features loaded successfully")
     popular_df = pickle.load(open('popular.pkl', 'rb'))
-    popular_df= popular_df.head(20)
+    
 except FileNotFoundError:
     print("ERROR: 'songs_dict.pkl' or 'popular.pkl' or 'scaled_features.npy' not found. Please run the notebook first.")
     exit()
