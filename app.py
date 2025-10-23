@@ -1,7 +1,9 @@
 import os
 import pickle
 import pandas as pd
+import numpy as np
 import spotipy
+from sklearn.metrics.pairwise import cosine_similarity
 from spotipy.oauth2 import SpotifyClientCredentials
 from flask import Flask, render_template, request
 from dotenv import load_dotenv # <-- NEW: Import the library
@@ -16,12 +18,16 @@ app = Flask(__name__)
 # --- Load Model Files ---
 try:
     songs_df = pd.DataFrame(pickle.load(open('songs_dict.pkl', 'rb')))
-    similarity_matrix = pickle.load(open('similarity.pkl', 'rb'))
+    # similarity_matrix = pickle.load(open('similarity.pkl', 'rb'))
+    scaled_features=np.load('scaled_features.npy')
+    print("Song data annd scaled features loaded successfully")
     popular_df = pickle.load(open('popular.pkl', 'rb'))
 except FileNotFoundError:
-    print("ERROR: Model files not found. Please ensure .pkl files are in the same directory.")
+    print("ERROR: 'songs_dict.pkl' or 'popular.pkl' or 'scaled_features.npy' not found. Please run the notebook first.")
     exit()
-
+except Exception as e:
+    print(f"Error loading model files: {e}")
+    exit()
 # --- Spotify API Setup (Secure Method using .env) ---
 # This code now reads the keys loaded from your .env file.
 try:
@@ -80,25 +86,64 @@ def recommend():
         user_song = request.form.get('song_name')
         if user_song not in songs_df['name'].values:
             error_message = f"Sorry, '{user_song}' was not found in our dataset. Please check the spelling or try another song."
-        else:
-            song_index = songs_df[songs_df['name'] == user_song].index[0]
-            similarity_scores = list(enumerate(similarity_matrix[song_index]))
-            sorted_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
-            top_songs_indices = [i[0] for i in sorted_scores[1:11]]
+    #     else:
+    #         song_index = songs_df[songs_df['name'] == user_song].index[0]
+    #         similarity_scores = list(enumerate(similarity_matrix[song_index]))
+    #         sorted_scores = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
+    #         top_songs_indices = [i[0] for i in sorted_scores[1:11]]
             
-            recommended_data = songs_df.iloc[top_songs_indices]
+    #         recommended_data = songs_df.iloc[top_songs_indices]
 
-            for _, row in recommended_data.iterrows():
-                details = get_track_details(row['id'])
-                recommendations_with_images.append({
-                    'name': row['name'],
-                    'artists': str(row['artists']).strip("[]'"),
-                    'id': row['id'],
-                    'image_url': details['image_url']
-                })
+    #         for _, row in recommended_data.iterrows():
+    #             details = get_track_details(row['id'])
+    #             recommendations_with_images.append({
+    #                 'name': row['name'],
+    #                 'artists': str(row['artists']).strip("[]'"),
+    #                 'id': row['id'],
+    #                 'image_url': details['image_url']
+    #             })
 
-    return render_template('recommend.html', 
-                           song_names=list(songs_df['name']), 
+    # return render_template('recommend.html', 
+    #                        song_names=list(songs_df['name']), 
+    #                        recommendations=recommendations_with_images,
+    #                        error_message=error_message,
+    #                        user_song=user_song)
+        else:
+            # --- ** UPDATED RECOMMENDATION LOGIC ** ---
+            try:
+                # 1. Find the index of the user's song.
+                song_index = songs_df[songs_df['name'] == user_song].index[0]
+
+                # 2. Get the scaled feature vector for that specific song.
+                # scaled_features[song_index] is a 1D array, reshape to 2D for cosine_similarity
+                song_vector = scaled_features[song_index].reshape(1, -1)
+
+                # 3. Calculate similarity between this song and ALL others ON-THE-FLY.
+                # This calculates a vector of similarities (1 row, N columns)
+                all_similarities = cosine_similarity(song_vector, scaled_features)[0] # Get the first (and only) row
+
+                # 4. Get the indices of the top 5 most similar songs (excluding itself).
+                # We use argsort to get indices, reverse it, and take indices 1 to 6.
+                similar_indices = np.argsort(all_similarities)[::-1][1:11]
+
+                # 5. Get the details for the recommended songs using these indices.
+                recommended_data = songs_df.iloc[similar_indices]
+
+                # 6. Fetch images (same as before)
+                for _, row in recommended_data.iterrows():
+                    details = get_track_details(row['id'])
+                    recommendations_with_images.append({
+                        'name': row['name'],
+                        'artists': str(row['artists']).strip("[]'"),
+                        'id': row['id'],
+                        'image_url': details['image_url']
+                    })
+            except Exception as e:
+                error_message = f"An error occurred during recommendation: {e}"
+                print(f"Recommendation Error: {e}")
+
+    return render_template('recommend.html',
+                           song_names=list(songs_df['name']),
                            recommendations=recommendations_with_images,
                            error_message=error_message,
                            user_song=user_song)

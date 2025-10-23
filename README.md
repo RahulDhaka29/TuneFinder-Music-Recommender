@@ -30,7 +30,7 @@ Enter a song you like, and get recommendations for 5 other songs with similar au
 /tunefinder-music-recommender/
 |-- app.py                          # Main Flask application logic
 |-- songs_dict.pkl                  # Processed song data (DataFrame as dictionary)
-|-- similarity.pkl                  # Pre-computed cosine similarity matrix
+|-- scaled_features.npy             # Scaled audio features (NumPy array) - Used for on-the-fly similarity
 |-- popular.pkl                     # Top 50 popular songs data (DataFrame)
 |-- music-recommendation-system.ipynb # Jupyter notebook for model building & EDA
 |-- README.md                       # This file
@@ -41,10 +41,8 @@ Enter a song you like, and get recommendations for 5 other songs with similar au
 |   |-- recommend.html              # Recommendation page template
 |   |-- about.html                  # About page template
 |   |-- contact.html                # Contact page template
-```
 
 ---
-
 ## Dataset 📊
 
 This project uses the "120 years of Olympic history, athletes and results" dataset.
@@ -96,7 +94,7 @@ pip install -r requirements.txt
 
 ### 4️⃣ Get Spotify API Credentials
 
-1. Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+1. Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/).
 2. Log in and **create a new application**.
 3. Note down your **Client ID** and **Client Secret**.
 4. In your app settings, add the following as a Redirect URI:
@@ -109,22 +107,20 @@ pip install -r requirements.txt
 
 ### 5️⃣ Set Environment Variables
 
-Create a file named `.env` in the project’s root directory (same level as `app.py`).
-
-Add your Spotify credentials:
+Create a file named `.env` in the project’s root directory (same level as `app.py`). Add your credentials:
 
 ```env
 SPOTIPY_CLIENT_ID=your_client_id_here
 SPOTIPY_CLIENT_SECRET=your_client_secret_here
 ```
 
-> ⚠️ **Important:** Add `.env` to your `.gitignore` file so you don't accidentally commit your secret keys!
+> ⚠️ **Important:** Add `.env` to your `.gitignore` file to prevent accidental commits of your API keys.
 
 ---
 
 ## 🚀 How to Run
 
-1. Ensure model files `songs_dict.pkl`, `similarity.pkl`, and `popular.pkl` are present in the root directory.  
+1. Ensure model files `songs_dict.pkl`, `scaled_features.npy`, and `popular.pkl` are present in the root directory.  
    If not, run the **`music-recommendation-system.ipynb`** notebook to generate them.
 
 2. Activate your virtual environment:
@@ -144,28 +140,20 @@ SPOTIPY_CLIENT_SECRET=your_client_secret_here
 
 ## 🧠 Model Building Process (Summary)
 
-The **`music-recommendation-system.ipynb`** notebook includes the complete model development process:
+The **`music-recommendation-system.ipynb`** notebook details the model creation:
 
 1. **Data Loading & Cleaning:**  
-   Loaded Spotify track and artist data; handled missing values and song name duplicates.
+   Loaded Spotify track and artist data; handled missing song names.
 
 2. **Feature Engineering:**  
-   Merged datasets, filtered songs (released ≥ 2000, popularity > 60), selected relevant audio features.
+   Merged datasets on artist ID, filtered songs (released ≥ 2000, popularity > 60), selected relevant audio features, and handled duplicate song names.
 
 3. **Feature Scaling:**  
-   Applied `MinMaxScaler` from Scikit-learn to normalize audio features.
+   Applied `MinMaxScaler` from Scikit-learn to normalize audio features between 0 and 1.
 
-4. **Similarity Calculation:**  
-   Computed the `cosine_similarity` matrix between all songs based on their scaled features.
-
-5. **Popularity List:**  
-   Created and saved a list of the **Top 50 most popular songs**.
-
-6. **Model Export:**  
-   Saved final data and models as:
-   - `songs_dict.pkl`
-   - `similarity.pkl`
-   - `popular.pkl`
+4. **Model Export:**  
+   Saved final song data (`songs_dict.pkl`), scaled features array (`scaled_features.npy`), and popularity list (`popular.pkl`).  
+   *(Similarity is now calculated on-the-fly in the app; `similarity.pkl` is deprecated.)*
 
 ---
 
@@ -175,14 +163,14 @@ The **`music-recommendation-system.ipynb`** notebook includes the complete model
 |-------------|----------|
 | **Python** | Core programming language |
 | **Pandas** | Data manipulation and analysis |
-| **NumPy** | Numerical computations |
-| **Scikit-learn** | Feature scaling and similarity computation |
+| **NumPy** | Numerical computations, saving scaled features |
+| **Scikit-learn** | Feature scaling (`MinMaxScaler`), similarity calculation (`cosine_similarity`) |
 | **Flask** | Backend web framework |
 | **Spotipy** | Spotify API integration |
 | **python-dotenv** | Secure management of API keys |
-| **HTML** | Web structure |
+| **HTML** | Frontend structure |
 | **Tailwind CSS** | Modern and responsive UI styling |
-| **Jupyter Notebook** | Model development and EDA |
+| **Jupyter Notebook** | Model development, EDA, and experimentation |
 | **Git & GitHub** | Version control and hosting |
 
 ---
@@ -197,5 +185,3 @@ Project created by **[Rahul Dhaka]**
 ## 📜 License
 
 This project is open-source and available under the [MIT License](LICENSE).
-
----
