@@ -64,7 +64,7 @@ def get_track_details(track_id):
 
 # --- Flask Routes ---
 
-@app.route('/')
+@app.route('/index')
 def index():
     top_50_with_images = []
     for _, row in popular_df.iterrows():
@@ -77,7 +77,7 @@ def index():
         })
     return render_template('index.html', songs=top_50_with_images)
 
-@app.route('/recommend', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def recommend():
     recommendations_with_images = []
     error_message = None

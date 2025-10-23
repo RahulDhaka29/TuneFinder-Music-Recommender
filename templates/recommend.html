@@ -22,8 +22,8 @@
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="/" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                        <a href="/recommend" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Recommend</a>
+                        <a href="/index" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="/" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">Recommend</a>
                         <a href="/about" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
                         <a href="/contact" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
                     </div>
@@ -38,7 +38,7 @@
         <p class="text-center text-lg text-gray-400 mb-8 max-w-2xl mx-auto">Enter the name of a song you love, and our content-based model will find 5 songs with similar musical features.</p>
 
         <!-- Search Form -->
-        <form action="/recommend" method="post" class="mb-12 max-w-2xl mx-auto">
+        <form action="/" method="post" class="mb-12 max-w-2xl mx-auto">
             <div class="flex rounded-lg shadow-md">
                 <input type="text" id="song_name" name="song_name" list="song-list" required class="flex-grow bg-gray-800 border-2 border-gray-700 text-white rounded-l-md p-4 focus:ring-green-500 focus:border-green-500 focus:outline-none" placeholder="e.g., Blinding Lights">
                 <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-r-md transition-colors">Find</button>
