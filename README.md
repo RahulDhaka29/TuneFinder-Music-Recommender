@@ -41,10 +41,10 @@ Enter a song you like, and get recommendations for 5 other songs with similar au
 |   |-- recommend.html              # Recommendation page template
 |   |-- about.html                  # About page template
 |   |-- contact.html                # Contact page template
+```
 
 ---
 
-```
 ## Dataset 📊
 
 This project uses the "120 years of Olympic history, athletes and results" dataset.
@@ -55,7 +55,6 @@ This project uses the "120 years of Olympic history, athletes and results" datas
 * `athlete_events.csv`
 * `noc_regions.csv`
 
-```
 ## ⚙️ Setup and Installation
 
 ### 1️⃣ Clone the Repository
