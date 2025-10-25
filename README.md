@@ -166,9 +166,9 @@ The **`music-recommendation-system.ipynb`** notebook details the model creation:
 | **Python** | Core programming language |
 | **Pandas** | Data manipulation and analysis |
 | **NumPy** | Numerical computations, saving scaled features |
-| **Scikit-learn** | Feature scaling (`MinMaxScaler`), similarity calculation (`cosine_similarity`) |
+| **Scikit-learn** | TF-IDF vectorization, Naive Bayes model, evaluation |
 | **Flask** | Backend web framework |
-| **Spotipy** | Spotify API integration |
+| **NLTK** | Text preprocessing |
 | **python-dotenv** | Secure management of API keys |
 | **HTML** | Frontend structure |
 | **Tailwind CSS** | Modern and responsive UI styling |
